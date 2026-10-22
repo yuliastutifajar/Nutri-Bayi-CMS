@@ -162,29 +162,29 @@ Anda dapat menulis semua artikel blog langsung dari Notion. Ikuti langkah mudah 
 
 Website ini siap dideploy ke **Vercel** hanya dalam beberapa klik:
 
-### Langkah A: Simpan Kode ke GitHub
-1. Buat akun di [https://github.com](https://github.com) jika belum punya.
-2. Buat repository baru dengan nama `nutribayi-web`.
-3. Di terminal komputer Anda:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: initial commit nutribayi mpasi blog"
-   git branch -M main
-   git remote add origin https://github.com/USERNAME-ANDA/nutribayi-web.git
-   git push -u origin main
-   ```
+### Langkah A: Simpan Kode ke GitHub Otomatis
+Cukup jalankan satu perintah di terminal:
+```bash
+npm run deploy
+```
+Atau jika ingin menambahkan pesan perubahan kustom:
+```bash
+npm run deploy -- "pesan perubahan kustom"
+```
+Skrip ini akan secara otomatis menambahkan semua file yang diubah (`git add .`), membuat commit, dan mengunggahnya langsung ke GitHub (`git push origin main`).
 
-### Langkah B: Hubungkan ke Vercel
+---
+
+### Langkah B: Hubungkan ke Vercel (Otomatis Deploy saat Push)
 1. Buka [https://vercel.com](https://vercel.com) dan masuk menggunakan akun GitHub Anda.
 2. Klik tombol **"Add New..."** -> **"Project"**.
-3. Pilih repository `nutribayi-web` lalu klik **Import**.
+3. Pilih repository `Nutri-Bayi-CMS` lalu klik **Import**.
 4. Di bagian **Environment Variables**, tambahkan 2 variabel berikut:
    - `NOTION_TOKEN`: Masukkan token integrasi Notion Anda.
    - `NOTION_DATABASE_ID`: Masukkan database ID Notion Anda.
    - `SITE_URL`: Masukkan URL domain Anda nantinya (misal: `https://nutribayi.vercel.app`).
 5. Klik **Deploy**!
-6. Dalam waktu kurang dari 1 menit, website Anda sudah online dan dapat diakses oleh ribuan ibu di seluruh dunia!
+6. Setiap kali Anda mengetik `npm run deploy` di terminal, Vercel akan otomatis mendeteksi pembaruan di GitHub dan langsung memperbarui website Anda secara live!
 
 ---
 
