@@ -110,65 +110,66 @@ export async function getPosts(): Promise<BlogPost[]> {
   }
 
   try {
+    // Query database tanpa sort kaku agar tidak crash jika nama kolom berbeda
     const response = await notion.databases.query({
       database_id: DATABASE_ID,
-      filter: {
-        property: 'Status',
-        select: {
-          equals: 'Published',
-        },
-      },
-      sorts: [
-        {
-          property: 'Date',
-          direction: 'descending',
-        },
-      ],
     });
 
-    const posts: BlogPost[] = response.results.map((page: any) => {
-      const props = page.properties;
+    const rawPosts: (BlogPost | null)[] = response.results.map((page: any) => {
+        const props = page.properties;
 
-      // Ambil Title
-      const rawTitle = getPlainText(props.Title?.title) || 'Tanpa Judul';
-      
-      // Ambil Slug (jika kosong, generate dari Title)
-      const rawSlug = getPlainText(props.Slug?.rich_text) || slugify(rawTitle);
+        // Cek status artikel (hanya lewati jika eksplisit 'Draft')
+        const statusValue = props.Status?.select?.name || props.Status?.status?.name || 'Published';
+        if (statusValue.toLowerCase() === 'draft') {
+          return null;
+        }
 
-      // Ambil Tanggal
-      const rawDate = props.Date?.date?.start || page.created_time || new Date().toISOString();
+        // Ambil Title secara fleksibel (Title atau properti bertipe title)
+        const titleProp = props.Title || Object.values(props).find((p: any) => p?.type === 'title');
+        const rawTitle = getPlainText(titleProp?.title) || 'Tanpa Judul';
+        
+        // Ambil Slug (jika kosong, generate dari Title)
+        const rawSlug = getPlainText(props.Slug?.rich_text) || slugify(rawTitle);
 
-      // Ambil Tags
-      const tags = (props.Tags?.multi_select || []).map((t: any) => t.name);
+        // Ambil Tanggal secara fleksibel
+        const rawDate = props.Date?.date?.start || props.Tanggal?.date?.start || page.created_time || new Date().toISOString();
 
-      // Ambil Excerpt / Ringkasan
-      const excerpt = getPlainText(props.Excerpt?.rich_text) || 'Panduan nutrisi MPASI sehat dan tips praktis tumbuh kembang bayi.';
+        // Ambil Tags
+        const tags = (props.Tags?.multi_select || props.Kategori?.multi_select || []).map((t: any) => t.name);
 
-      // Ambil Cover Image
-      const coverImage = extractCoverImage(page);
+        // Ambil Excerpt / Ringkasan
+        const excerpt = getPlainText(props.Excerpt?.rich_text || props.Ringkasan?.rich_text) || 'Panduan nutrisi MPASI sehat dan tips praktis tumbuh kembang bayi.';
 
-      return {
-        id: page.id,
-        title: rawTitle,
-        slug: rawSlug,
-        date: rawDate,
-        tags: tags.length > 0 ? tags : ['MPASI Sehat'],
-        excerpt,
-        coverImage,
-        status: 'Published',
-        author: {
-          name: 'Tim Ahli NutriBayi',
-          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
-          role: 'Nutritionist & Mom of 2',
-        },
-        readingTime: estimateReadingTime(excerpt + ' ' + rawTitle),
-      };
-    });
+        // Ambil Cover Image
+        const coverImage = extractCoverImage(page);
+
+        return {
+          id: page.id,
+          title: rawTitle,
+          slug: rawSlug,
+          date: rawDate,
+          tags: tags.length > 0 ? tags : ['MPASI Sehat'],
+          excerpt,
+          coverImage,
+          status: 'Published' as const,
+          author: {
+            name: 'Tim Ahli NutriBayi',
+            avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
+            role: 'Nutritionist & Mom of 2',
+          },
+          readingTime: estimateReadingTime(excerpt + ' ' + rawTitle),
+        };
+      });
+
+    const posts: BlogPost[] = rawPosts.filter((post): post is BlogPost => post !== null);
+
+    // Urutkan postingan berdasarkan tanggal terbaru
+    posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return posts.length > 0 ? posts : MOCK_POSTS;
   } catch (error) {
-    console.error('❌ Gagal mengambil database Notion:', error);
-    // Kembalikan mock posts agar website tetap berjalan
+    console.warn('⚠️ Gagal mengambil database Notion (menggunakan fallback mock data):', (error as any)?.message || error);
+    // Kembalikan mock posts agar website tetap berjalan tanpa gagal build
     return MOCK_POSTS;
   }
 }
@@ -186,7 +187,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
  * Mengambil daftar blocks Notion dari sebuah halaman (page ID)
  */
 export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
-  if (!isNotionConfigured || !notion) {
+  if (!isNotionConfigured || !notion || pageId.startsWith('mock-')) {
     return MOCK_BLOCKS[pageId] || DEFAULT_MOCK_BLOCKS;
   }
 
