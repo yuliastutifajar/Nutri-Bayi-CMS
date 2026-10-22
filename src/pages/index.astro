@@ -1,0 +1,321 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getPosts } from '../lib/notion';
+
+// Mengambil artikel blog dari Notion (Fallback ke Mock Data jika belum ada kredensial Notion)
+const allPosts = await getPosts();
+const latestPosts = allPosts.slice(0, 3);
+
+// 3 Poin Fitur Unggulan (Why Choose Us)
+const whyChooseUs = [
+  {
+    icon: '🥦',
+    badge: '100% Organik & Alami',
+    title: 'Bahan Segar Tanpa Kimiawi',
+    desc: 'Bebas pestisida, tanpa pengawet buatan, tanpa tambahan MSG, gula, dan garam berlebih. Aman untuk sistem pencernaan bayi yang sensitif.',
+    color: 'bg-brand-green-50 text-brand-green border-brand-green-200',
+  },
+  {
+    icon: '⏱️',
+    badge: 'Praktis & Higienis',
+    title: 'Siap Saji dalam 5 Menit',
+    desc: 'Dikemas dengan teknologi higienis food-grade yang menjaga kesegaran vitamin. Solusi penyelamat ibu muda dan ibu bekerja yang sibuk.',
+    color: 'bg-brand-orange-50 text-brand-orange border-brand-orange-200',
+  },
+  {
+    icon: '🩺',
+    badge: 'Formula Ahli Nutrisi',
+    title: 'Disesuaikan Tahapan Usia',
+    desc: 'Tekstur dan komposisi gizi 4 bintang (karbohidrat, zat besi hewani, nabati, lemak) dirancang bersama dokter anak untuk optimalkan berat badan.',
+    color: 'bg-brand-blue-50 text-brand-blue border-brand-blue-200',
+  },
+];
+
+// Showcase Produk MPASI Sehat
+const products = [
+  {
+    title: 'Puree Halus Starter Pack (6–8 Bulan)',
+    desc: 'Tekstur semi-cair halus perkenalan hari pertama. Varian: Puree Alpukat Pisang, Hati Ayam Labu Madu, dan Daging Sapi Wortel.',
+    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80',
+    age: '6–8 Bulan',
+    tag: 'Menu Awal MPASI',
+    price: 'Rp 45.000',
+  },
+  {
+    title: 'Bubur Lumat 4 Bintang (8–11 Bulan)',
+    desc: 'Tekstur lumat berbulir untuk stimulasi oromotor bayi. Mengandung salmon Norwegia, beras organik, hati ayam kampung, dan bayam Jepang.',
+    image: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=600&q=80',
+    age: '8–11 Bulan',
+    tag: 'Best Seller',
+    price: 'Rp 58.000',
+  },
+  {
+    title: 'Nasi Tim Kasar & Finger Food (12–24 Bulan)',
+    desc: 'Potongan lembut siap kunyah untuk melatih kemandirian makan si kecil. Bebas drama GTM dengan aroma kaldu sapi alami yang gurih.',
+    image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80',
+    age: '12–24 Bulan',
+    tag: 'Anti GTM',
+    price: 'Rp 65.000',
+  },
+];
+
+// Pertanyaan Umum (FAQ)
+const faqs = [
+  {
+    q: 'Berapa lama produk MPASI NutriBayi dapat disimpan?',
+    a: 'Produk kami dikemas steril tanpa pengawet. Dapat bertahan hingga 48 jam di chiller (kulkas bawah) dan hingga 3 bulan di freezer suhu -18°C.',
+  },
+  {
+    q: 'Apakah menu MPASI NutriBayi sudah memenuhi standar IDAI & WHO?',
+    a: 'Ya, seluruh menu disusun berdasarkan panduan MPASI Menu Lengkap IDAI dengan prioritas protein hewani kaya zat besi dan asam lemak esensial pencegah stunting.',
+  },
+  {
+    q: 'Bagaimana cara menyajikan menu MPASI siap saji ini?',
+    a: 'Sangat praktis! Cukup hangatkan wadah dengan metode kukus (steam) selama 3-5 menit atau rendam dalam air panas mendidih sebelum disuapkan ke si kecil.',
+  },
+  {
+    q: 'Apakah bisa berkonsultasi seputar tekstur dan menu si kecil yang GTM?',
+    a: 'Tentu! Kami menyediakan layanan konsultasi gratis via WhatsApp bersama tim edukator nutrisi anak kami.',
+  },
+];
+---
+
+<Layout
+  title="NutriBayi - Makanan MPASI Sehat, Praktis & Bergizi untuk Si Kecil"
+  description="Website & media digital rekomendasi MPASI sehat bayi 6-24 bulan. Menu lengkap bergizi seimbang, aman, praktis siap saji, dan bebas pengawet."
+>
+  
+  <!-- 1. HERO SECTION -->
+  <Hero />
+
+  <!-- 2. FITUR UNGGULAN / WHY CHOOSE US -->
+  <section class="py-16 md:py-24 bg-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-brand-green-50 border border-brand-green-200 text-brand-green text-xs font-bold uppercase tracking-wider">
+          Standar Kualitas Tertinggi
+        </span>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-blue">
+          Kenapa Ibu Muda Memilih <span class="text-brand-orange">NutriBayi</span>?
+        </h2>
+        <p class="text-slate-600 text-base sm:text-lg">
+          Kami memahami kekhawatiran Bunda dalam menghadirkan asupan pertama bagi buah hati tercinta. Inilah 3 komitmen utama kami:
+        </p>
+      </div>
+
+      <!-- 3 Poin Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {whyChooseUs.map((item, index) => (
+          <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 card-hover flex flex-col justify-between relative overflow-hidden group">
+            
+            <div class="space-y-4">
+              <!-- Icon Box -->
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-sm mb-6 group-hover:scale-110 transition-transform bg-slate-50 border border-slate-100">
+                {item.icon}
+              </div>
+
+              <!-- Badge -->
+              <span class={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${item.color}`}>
+                {item.badge}
+              </span>
+
+              <!-- Title -->
+              <h3 class="font-bubblegum text-2xl font-bold text-brand-blue group-hover:text-brand-orange transition-colors">
+                {item.title}
+              </h3>
+
+              <!-- Desc -->
+              <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+
+            <!-- Number subtle background -->
+            <div class="absolute -right-2 -bottom-4 font-bubblegum text-8xl font-black text-slate-100/60 pointer-events-none select-none">
+              0{index + 1}
+            </div>
+
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. PRODUK MPASI SEHAT SHOWCASE -->
+  <section id="produk" class="py-16 md:py-24 bg-gradient-to-b from-orange-50/40 via-white to-orange-50/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div class="max-w-2xl space-y-3">
+          <span class="inline-block px-4 py-1.5 rounded-full bg-brand-orange-50 border border-brand-orange-200 text-brand-orange text-xs font-bold uppercase tracking-wider">
+            Menu Pilihan Bunda
+          </span>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-blue">
+            Pilihan Menu MPASI Sehat & Bergizi
+          </h2>
+          <p class="text-slate-600 text-base sm:text-lg">
+            Setiap porsi dibuat segar dari bahan lokal dan impor berkualitas, dengan tekstur yang disesuaikan usia bayi Bunda.
+          </p>
+        </div>
+
+        <div>
+          <a
+            href="https://wa.me/6281234567890?text=Halo%20NutriBayi,%20saya%20ingin%20memilih%20makanan%20sehat%20untuk%20si%20kecil"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-primary shadow-soft-orange"
+          >
+            Piliih makanan sehat untuk si kecil
+          </a>
+        </div>
+      </div>
+
+      <!-- Produk Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {products.map((prod) => (
+          <div class="bg-white rounded-3xl overflow-hidden border border-orange-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            
+            <div>
+              <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                <img
+                  src={prod.image}
+                  alt={prod.title}
+                  loading="lazy"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  width="600"
+                  height="450"
+                />
+                <div class="absolute top-3 left-3 bg-brand-blue text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                  {prod.age}
+                </div>
+                <div class="absolute top-3 right-3 bg-brand-orange text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                  {prod.tag}
+                </div>
+              </div>
+
+              <div class="p-6 sm:p-7 space-y-3">
+                <h3 class="font-bubblegum text-2xl font-bold text-brand-blue group-hover:text-brand-orange transition-colors">
+                  {prod.title}
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  {prod.desc}
+                </p>
+              </div>
+            </div>
+
+            <div class="p-6 sm:p-7 pt-0 border-t border-slate-100 flex items-center justify-between mt-4">
+              <div>
+                <span class="text-xs text-slate-400 block font-medium">Harga per porsi</span>
+                <span class="font-bold text-xl text-brand-orange">{prod.price}</span>
+              </div>
+              <a
+                href={`https://wa.me/6281234567890?text=Halo%20NutriBayi,%20saya%20tertarik%20dengan%20menu%20${encodeURIComponent(prod.title)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-brand-green hover:bg-brand-green-600 transition shadow-soft-green"
+              >
+                Pesan Menu
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. SECTION BLOG TERBARU (AMBIL 3 DARI NOTION) -->
+  <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div class="max-w-2xl space-y-3">
+          <span class="inline-block px-4 py-1.5 rounded-full bg-brand-blue-50 border border-brand-blue-200 text-brand-blue text-xs font-bold uppercase tracking-wider">
+            Edukasi & Resep MPASI
+          </span>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-blue">
+            Artikel & Panduan Terbaru
+          </h2>
+          <p class="text-slate-600 text-base sm:text-lg">
+            Temukan tips praktis atasi GTM, jadwal tekstur bayi, hingga resep 4 bintang yang mudah dibuat di rumah.
+          </p>
+        </div>
+
+        <div>
+          <a
+            href="/blog"
+            class="btn-secondary group"
+          >
+            <span>Lihat Semua Artikel</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Grid 3 Post Terbaru -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {latestPosts.map((post) => (
+          <BlogCard post={post} />
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5. SECTION FAQ SEPUTAR MPASI -->
+  <section class="py-16 md:py-20 bg-slate-50 border-t border-slate-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center space-y-3 mb-12">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-brand-orange-50 border border-brand-orange-200 text-brand-orange text-xs font-bold uppercase tracking-wider">
+          Tanya Jawab Bunda
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-brand-blue">
+          Pertanyaan Seputar Nutrisi & MPASI
+        </h2>
+      </div>
+
+      <div class="space-y-4">
+        {faqs.map((faq) => (
+          <details class="group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm transition-all duration-200 open:shadow-md open:border-brand-orange/40">
+            <summary class="flex items-center justify-between cursor-pointer font-bold text-slate-800 group-hover:text-brand-orange text-base sm:text-lg select-none list-none">
+              <span>{faq.q}</span>
+              <span class="ml-4 flex-shrink-0 w-8 h-8 rounded-full bg-orange-50 text-brand-orange flex items-center justify-center group-open:rotate-180 transition-transform">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </span>
+            </summary>
+            <p class="mt-4 text-slate-600 leading-relaxed text-sm sm:text-base border-t border-slate-100 pt-3">
+              {faq.a}
+            </p>
+          </details>
+        ))}
+      </div>
+
+      <div class="text-center mt-12">
+        <a
+          href="https://wa.me/6281234567890?text=Halo%20NutriBayi,%20saya%20mau%20konsultasi%20MPASI"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-primary text-base shadow-soft-orange"
+        >
+          Piliih makanan sehat untuk si kecil
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>

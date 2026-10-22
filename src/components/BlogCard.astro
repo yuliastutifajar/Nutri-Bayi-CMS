@@ -1,0 +1,128 @@
+---
+import type { BlogPost } from '../lib/notion';
+
+export interface Props {
+  post: BlogPost;
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+
+// Format tanggal ke Bahasa Indonesia (Contoh: "10 Februari 2026")
+function formatDateIndo(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+const formattedDate = formatDateIndo(post.date);
+
+// Palet warna tag bergantian secara dinamis
+const getTagColorClass = (index: number) => {
+  const classes = [
+    'bg-brand-orange-50 text-brand-orange border-brand-orange-200',
+    'bg-brand-blue-50 text-brand-blue border-brand-blue-200',
+    'bg-brand-green-50 text-brand-green border-brand-green-200',
+  ];
+  return classes[index % classes.length];
+};
+---
+
+<article class={`group bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col ${featured ? 'md:grid md:grid-cols-12 md:gap-8' : ''}`}>
+  
+  <!-- Cover Image Container -->
+  <div class={`relative overflow-hidden bg-slate-100 ${featured ? 'md:col-span-6 aspect-[16/10] md:aspect-auto' : 'aspect-[16/10]'}`}>
+    <a href={`/blog/${post.slug}`} class="block w-full h-full" tabindex="-1" aria-hidden="true">
+      <img
+        src={post.coverImage}
+        alt={`Cover artikel: ${post.title}`}
+        loading="lazy"
+        decoding="async"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        width="600"
+        height="375"
+      />
+    </a>
+    
+    <!-- Reading Time Badge -->
+    <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1 shadow-sm">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>{post.readingTime}</span>
+    </div>
+  </div>
+
+  <!-- Content Container -->
+  <div class={`p-6 sm:p-7 flex flex-col justify-between flex-grow ${featured ? 'md:col-span-6 md:py-8' : ''}`}>
+    <div>
+      
+      <!-- Tags & Tanggal -->
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        {post.tags.slice(0, 2).map((tag, idx) => (
+          <span class={`badge-tag border ${getTagColorClass(idx)}`}>
+            {tag}
+          </span>
+        ))}
+        <span class="text-xs text-slate-400 font-medium ml-auto">
+          {formattedDate}
+        </span>
+      </div>
+
+      <!-- Judul Artikel -->
+      <h3 class={`font-bubblegum font-bold text-brand-blue group-hover:text-brand-orange transition-colors leading-snug mb-3 ${featured ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'}`}>
+        <a href={`/blog/${post.slug}`} class="focus:outline-none focus:underline">
+          {post.title}
+        </a>
+      </h3>
+
+      <!-- Excerpt / Cuplikan Teks -->
+      <p class="text-slate-600 text-sm sm:text-base leading-relaxed line-clamp-2 sm:line-clamp-3 mb-6">
+        {post.excerpt}
+      </p>
+
+    </div>
+
+    <!-- Author & Read More -->
+    <div class="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
+      <div class="flex items-center gap-3">
+        <img
+          src={post.author.avatar}
+          alt={post.author.name}
+          class="w-9 h-9 rounded-full object-cover border border-orange-200"
+          loading="lazy"
+          width="36"
+          height="36"
+        />
+        <div>
+          <span class="text-xs font-bold text-slate-800 block leading-tight">
+            {post.author.name}
+          </span>
+          <span class="text-[11px] text-slate-400 block leading-tight">
+            {post.author.role}
+          </span>
+        </div>
+      </div>
+
+      <!-- Arrow Icon -->
+      <a
+        href={`/blog/${post.slug}`}
+        aria-label={`Baca selengkapnya tentang ${post.title}`}
+        class="w-9 h-9 rounded-full bg-brand-orange-50 text-brand-orange flex items-center justify-center group-hover:bg-brand-orange group-hover:text-white transition-all shadow-sm"
+      >
+        <svg class="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+
+</article>

@@ -1,0 +1,177 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getPosts } from '../../lib/notion';
+
+const posts = await getPosts();
+
+// Ambil query tag dari URL jika ada (misal: /blog?tag=Panduan+MPASI+sesuai+usia)
+const currentTag = Astro.url.searchParams.get('tag') || 'Semua';
+
+// Daftar semua topik dari Project Identity
+const allTopics = [
+  'Semua',
+  'MPASI Sehat & Tumbuh Kembang Bayi',
+  'Panduan MPASI sesuai usia',
+  'Ide menu MPASI',
+  'Nutrisi dan kebutuhan bayi',
+  'Tips memilih bahan makanan',
+  'Resep MPASI praktis',
+  'Tips menghadapi GTM (Gerakan Tutup Mulut)',
+  'Tips menyimpan dan menyiapkan MPASI',
+];
+
+// Filter artikel berdasarkan tag jika dipilih
+const filteredPosts = currentTag === 'Semua'
+  ? posts
+  : posts.filter((p) => p.tags.some((t) => t.toLowerCase().includes(currentTag.toLowerCase())));
+
+const breadcrumbItems = [
+  { label: 'Beranda', href: '/' },
+  { label: 'Blog & Panduan MPASI' },
+];
+
+const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
+const regularPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
+---
+
+<Layout
+  title="Blog & Panduan MPASI Sehat Bayi - Tips Nutrisi & Resep Praktis"
+  description="Kumpulan panduan MPASI terpercaya: resep MPASI 4 bintang, tips mengatasi anak GTM, tahapan tekstur sesuai usia, dan pemenuhan nutrisi bayi 6-24 bulan."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20">
+    
+    <!-- Breadcrumbs -->
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <!-- Header Section -->
+    <div class="mt-8 mb-12 text-center max-w-3xl mx-auto space-y-4">
+      <span class="inline-block px-4 py-1.5 rounded-full bg-brand-blue-50 border border-brand-blue-200 text-brand-blue text-xs font-bold uppercase tracking-wider">
+        Pusat Edukasi Bunda
+      </span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-blue leading-tight">
+        Panduan MPASI Sehat & <span class="text-brand-orange">Tumbuh Kembang</span> Bayi
+      </h1>
+      <p class="text-slate-600 text-base sm:text-lg">
+        Informasi berbasis bukti medis, resep praktis harian, dan solusi cerdas mendampingi buah hati makan lahap penuh gizi.
+      </p>
+
+      <!-- Search Input Client Side -->
+      <div class="max-w-xl mx-auto pt-4">
+        <div class="relative">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Cari artikel (misal: GTM, alpukat, zat besi, tekstur)..."
+            class="w-full pl-12 pr-4 py-3.5 rounded-full border-2 border-slate-200 focus:border-brand-orange focus:outline-none focus:ring-4 focus:ring-brand-orange/10 text-sm transition shadow-sm"
+          />
+          <svg class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Topik / Kategori Kapsul -->
+    <div class="mb-12 overflow-x-auto pb-4 scrollbar-none">
+      <div class="flex items-center gap-2 min-w-max justify-start md:justify-center">
+        {allTopics.map((topic) => {
+          const isSelected = currentTag === topic;
+          const href = topic === 'Semua' ? '/blog' : `/blog?tag=${encodeURIComponent(topic)}`;
+          return (
+            <a
+              href={href}
+              class={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 border ${
+                isSelected
+                  ? 'bg-brand-orange text-white border-brand-orange shadow-soft-orange font-bold scale-105'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-brand-orange hover:text-brand-orange'
+              }`}
+            >
+              {topic}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Artikel Utama (Featured Post) -->
+    {featuredPost && (
+      <div class="mb-12">
+        <span class="inline-block text-xs font-bold text-brand-orange uppercase tracking-wider mb-3">
+          ⭐ Artikel Pilihan Redaksi
+        </span>
+        <BlogCard post={featuredPost} featured={true} />
+      </div>
+    )}
+
+    <!-- Daftar Artikel Reguler Grid -->
+    {regularPosts.length > 0 ? (
+      <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {regularPosts.map((post) => (
+          <div class="blog-item" data-title={post.title.toLowerCase()} data-excerpt={post.excerpt.toLowerCase()} data-tags={post.tags.join(' ').toLowerCase()}>
+            <BlogCard post={post} />
+          </div>
+        ))}
+      </div>
+    ) : filteredPosts.length === 0 ? (
+      <div class="text-center py-16 bg-orange-50/50 rounded-3xl border border-orange-100 p-8">
+        <div class="text-5xl mb-4">🥣</div>
+        <h3 class="font-bubblegum text-2xl font-bold text-brand-blue mb-2">
+          Belum Ada Artikel untuk Topik Ini
+        </h3>
+        <p class="text-slate-600 text-sm max-w-md mx-auto mb-6">
+          Artikel dengan topik "{currentTag}" sedang dalam tahap penulisan oleh tim ahli kami.
+        </p>
+        <a href="/blog" class="btn-primary text-sm py-2 px-6">
+          Kembali ke Semua Artikel
+        </a>
+      </div>
+    ) : null}
+
+    <!-- CTA Box Bawah -->
+    <div class="mt-20 bg-gradient-to-r from-brand-blue to-blue-800 rounded-3xl p-8 sm:p-12 text-white text-center shadow-soft-blue flex flex-col items-center gap-6">
+      <span class="px-3.5 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wider">
+        Solusi Praktis Bunda
+      </span>
+      <h2 class="font-bubblegum text-3xl sm:text-4xl font-bold max-w-2xl">
+        Kombinasikan Edukasi Nutrisi dengan Menu MPASI Siap Saji NutriBayi
+      </h2>
+      <p class="text-white/80 max-w-xl text-sm sm:text-base">
+        Hemat waktu persiapan di dapur hingga 2 jam setiap hari tanpa mengorbankan kualitas asupan si kecil.
+      </p>
+      <a
+        href="/#produk"
+        class="btn-primary text-base py-3.5 px-8 shadow-soft-orange"
+      >
+        Piliih makanan sehat untuk si kecil
+      </a>
+    </div>
+
+  </div>
+</Layout>
+
+<script>
+  // Client-side instant filter untuk search bar
+  const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+  const blogItems = document.querySelectorAll('.blog-item');
+
+  if (searchInput && blogItems.length > 0) {
+    searchInput.addEventListener('input', (e) => {
+      const query = (e.target as HTMLInputElement).value.toLowerCase().trim();
+
+      blogItems.forEach((el) => {
+        const item = el as HTMLElement;
+        const title = item.dataset.title || '';
+        const excerpt = item.dataset.excerpt || '';
+        const tags = item.dataset.tags || '';
+
+        if (!query || title.includes(query) || excerpt.includes(query) || tags.includes(query)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
+</script>

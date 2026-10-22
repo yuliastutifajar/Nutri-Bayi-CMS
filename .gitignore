@@ -1,0 +1,19 @@
+# Build outputs
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.production
+.env.local
+
+# Vercel deployment
+.vercel/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+*.log

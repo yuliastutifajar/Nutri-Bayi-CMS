@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Host
+Host: https://nutribayi.vercel.app
+
+# Sitemaps
+Sitemap: https://nutribayi.vercel.app/sitemap-index.xml
+Sitemap: https://nutribayi.vercel.app/sitemap-0.xml

@@ -1,0 +1,102 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalURL?: string;
+  type?: 'website' | 'article';
+  publishDate?: string;
+  modifyDate?: string;
+  authorName?: string;
+  tags?: string[];
+  schemaData?: any;
+}
+
+const siteUrl = import.meta.env.SITE_URL || Astro.site?.toString() || 'https://nutribayi.vercel.app';
+const cleanSiteUrl = siteUrl.replace(/\/$/, '');
+
+const {
+  title = 'NutriBayi - Media Digital & Panduan MPASI Sehat Bayi Indonesia',
+  description = 'Portal informasi dan panduan MPASI terpercaya untuk ibu muda. Resep MPASI sehat, praktis, bergizi, tips atasi GTM, dan nutrisi tumbuh kembang bayi 6-24 bulan.',
+  image = 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1200&q=80',
+  canonicalURL = new URL(Astro.url.pathname, cleanSiteUrl).toString(),
+  type = 'website',
+  publishDate,
+  modifyDate,
+  authorName = 'Tim Ahli NutriBayi',
+  tags = ['MPASI Sehat', 'Nutrisi Bayi', 'Resep MPASI'],
+  schemaData,
+} = Astro.props;
+
+// Format title dengan brand suffix
+const pageTitle = title.includes('NutriBayi') ? title : `${title} | NutriBayi MPASI`;
+const ogImage = image.startsWith('http') ? image : `${cleanSiteUrl}${image}`;
+
+// Schema default Organization
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'NutriBayi',
+  url: cleanSiteUrl,
+  logo: `${cleanSiteUrl}/favicon.svg`,
+  description: 'Digital media dan rekomendasi MPASI sehat, praktis, bergizi, dan aman untuk bayi Indonesia.',
+  sameAs: [
+    'https://instagram.com/nutribayi',
+    'https://tiktok.com/@nutribayi'
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'Customer Support',
+    email: 'halo@nutribayi.com',
+  },
+};
+
+// Gabungan Schema JSON-LD
+const schemas = schemaData ? (Array.isArray(schemaData) ? [organizationSchema, ...schemaData] : [organizationSchema, schemaData]) : [organizationSchema];
+---
+
+<!-- Primary Meta Tags -->
+<title>{pageTitle}</title>
+<meta name="title" content={pageTitle} />
+<meta name="description" content={description} />
+<meta name="keywords" content={tags.join(', ')} />
+<meta name="author" content={authorName} />
+<link rel="canonical" href={canonicalURL} />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:alt" content={pageTitle} />
+<meta property="og:site_name" content="NutriBayi" />
+<meta property="og:locale" content="id_ID" />
+
+{type === 'article' && publishDate && (
+  <meta property="article:published_time" content={publishDate} />
+)}
+{type === 'article' && modifyDate && (
+  <meta property="article:modified_time" content={modifyDate} />
+)}
+{type === 'article' && tags.map((tag) => (
+  <meta property="article:tag" content={tag} />
+))}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalURL} />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={pageTitle} />
+
+<!-- Favicon & Mobile Icons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="theme-color" content="#f76806" />
+
+<!-- Schema.org JSON-LD (Search Engines Rich Snippet) -->
+{schemas.map((schema) => (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+))}
