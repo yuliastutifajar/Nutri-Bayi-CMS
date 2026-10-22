@@ -55,7 +55,14 @@ async function main() {
       console.log('ℹ️  Tidak ada file baru yang diubah.');
     }
 
-    // 3. Push ke remote GitHub
+    // 3. Sinkronkan dan push ke remote GitHub
+    console.log(`\n🔄 Sinkronkan dengan GitHub (\x1b[35morigin/${currentBranch}\x1b[0m)...`);
+    try {
+      run(`${git} pull --rebase origin ${currentBranch}`);
+    } catch {
+      // Abaikan jika remote baru pertama kali
+    }
+
     console.log(`\n⬆️  Mengirim commit ke GitHub (\x1b[35morigin/${currentBranch}\x1b[0m)...`);
     run(`${git} push origin ${currentBranch}`);
 
